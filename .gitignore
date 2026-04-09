@@ -26,3 +26,35 @@ yarn-error.log*
 
 # Environment files (local configs)
 /.env.*
+
+#extensions
+software/*.json
+
+# Dependencies
+node_modules/
+.expo/
+.metro-cache/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+backend/temp/
+
+# Environment variables (NEVER push these)
+.env
+*.env
+
+# Firebase
+.firebaserc
+*.key.json
+
+# Build outputs
+build/
+dist/
+.next/
+
+# OS files
+.DS_Store
+Thumbs.db
