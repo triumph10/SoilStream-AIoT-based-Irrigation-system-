@@ -58,3 +58,9 @@ dist/
 # OS files
 .DS_Store
 Thumbs.db
+
+# ML Model weights (too large for GitHub)
+*.h5
+*.pkl
+*.pt
+*.pth
