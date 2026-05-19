@@ -243,8 +243,8 @@ python app.py
 
 # Authors
 
-- Siddesh Patil
 - Raj Choudhary
+- Siddesh Patil
 - Varun Lad
 - Devesh Patil
 
