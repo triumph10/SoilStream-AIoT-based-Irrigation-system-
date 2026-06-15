@@ -1,260 +1,99 @@
 <div align="center">
 
-<img src="https://img.shields.io/badge/IEEE_CONIT_2026-Accepted-blue?style=for-the-badge&logo=ieee" />
-<img src="https://img.shields.io/badge/Patent-202621042187-green?style=for-the-badge" />
-<img src="https://img.shields.io/badge/Copyright-SW--13522%2F2026--CO-orange?style=for-the-badge" />
-
 # SoilStream
 
-### A Solar-Powered AIoT System for Intelligent Soil Monitoring and Automated Irrigation
+### Solar-Powered AIoT System for Real-Time Soil Monitoring and Automated Irrigation
 
-*Accepted at IEEE 6th International Conference on Intelligent Technologies (CONIT 2026)*
+[![IEEE CONIT 2026](https://img.shields.io/badge/IEEE_CONIT_2026-Accepted-blue?style=flat-square&logo=ieee)](https://d2tna6wv3bmh8.cloudfront.net/research_paper.pdf)
+[![Patent](https://img.shields.io/badge/Patent-202621042187-green?style=flat-square)](https://d2tna6wv3bmh8.cloudfront.net)
+[![Copyright](https://img.shields.io/badge/Copyright-SW--13522%2F2026--CO-orange?style=flat-square)](https://d2tna6wv3bmh8.cloudfront.net)
+[![ESP32](https://img.shields.io/badge/ESP32-Firmware-red?style=flat-square)](hardware/)
+[![React Native](https://img.shields.io/badge/React_Native-Mobile-61DAFB?style=flat-square&logo=react)](mobile_app/)
+[![Firebase](https://img.shields.io/badge/Firebase-Backend-FFCA28?style=flat-square&logo=firebase)](backend/)
 
-[📄 Paper](https://d2tna6wv3bmh8.cloudfront.net/research_paper.pdf) · [📋 Project Report](https://d2tna6wv3bmh8.cloudfront.net/project_report.pdf) · [🖼️ Poster](https://d2tna6wv3bmh8.cloudfront.net/poster.pdf) · [🌐 Blog](https://d2tna6wv3bmh8.cloudfront.net)
+**[📄 Research Paper](https://d2tna6wv3bmh8.cloudfront.net/research_paper.pdf) · [📋 Project Report](https://d2tna6wv3bmh8.cloudfront.net/project_report.pdf) · [🖼️ Poster](https://d2tna6wv3bmh8.cloudfront.net/poster.pdf) · [💻 Source Code](https://github.com/RajChoudhary99/SoilStream)**
 
 </div>
 
 ---
 
-## Overview
+## 🌐 Read the Full Write-Up
 
-Farmers in India's Konkan region lose water, money, and crops to a solvable problem — irrigation systems that can't tell if rain is two hours away. The pump runs, the monsoon arrives, and water is wasted at scale.
+> **[Building a Solar-Powered Smart Irrigation System That Actually Thinks](https://d2tna6wv3bmh8.cloudfront.net)**
 
-**SoilStream** is a closed-loop AIoT platform that monitors soil and atmospheric conditions in real time, predicts local rainfall using machine learning, identifies crop type from leaf images, and only irrigates when it genuinely makes sense — all powered by solar energy with no dependency on the grid.
+The blog covers the full story — why existing IoT irrigation systems fail in monsoon-dependent regions, how each layer of SoilStream (hardware, ML models, decision engine, mobile app) was designed and why, what broke during development (EfficientNetB0's training collapse, building a Konkan-specific rainfall dataset from scratch), and the complete results with model comparisons.
 
----
-
-## Research & IP
-
-| | |
-|---|---|
-| **Conference** | IEEE CONIT 2026 · KLE Institute of Technology, Hubballi · Paper ID: 960 |
-| **Patent** | Intellectual Property India, GoI · Application No: `202621042187` |
-| **Copyright** | Copyright Office, GoI · Registration No: `SW-13522/2026-CO` |
+If you're trying to understand the project or build something similar, start there.
 
 ---
 
-## Key Results
-
-### Crop Identification (CNN Comparison)
-
-| Model | Test Accuracy | Val. Accuracy | Weighted F1 | Status |
-|---|---|---|---|---|
-| **ResNet50** | **99.7%** | 96.48% | **0.97** | ✅ Selected |
-| VGG16 | 95.6% | 94.04% | 0.95 | Fallback |
-| EfficientNetB0 | 16.0%* | 99.76% | 0.07 | ❌ Rejected |
-
-*\*Training collapse detected despite high validation accuracy — ruled out at inference.*
-
-### Rainfall Prediction (Coastal Dataset — Konkan Region)
-
-| Model | Accuracy | Precision | Recall | F1 |
-|---|---|---|---|---|
-| **SVR** | **92.86%** | **0.9257** | 0.8954 | **0.9103** |
-| LightGBM | 92.32% | 0.9087 | 0.9007 | 0.9047 |
-| GRU | 92.30% | 0.9195 | 0.8873 | 0.9031 |
-
-> **Why SVR?** Precision was prioritised over raw accuracy. A false positive (predicting rain when there's none) keeps the pump off when it shouldn't be — the costlier error in a monsoon-dependent region.
-
-### Rainfall Prediction (Extended Region Dataset)
-
-| Model | Accuracy | Precision | Recall | F1 |
-|---|---|---|---|---|
-| SVR | 91.47% | **0.9310** | 0.8725 | 0.9008 |
-| LightGBM | **91.55%** | 0.9232 | 0.8832 | 0.9027 |
-| GRU | 91.38% | 0.9166 | 0.8863 | 0.9012 |
+SoilStream is a closed-loop AIoT platform that monitors real-time soil and atmospheric conditions, predicts rainfall using machine learning, identifies crop type from images, and automates irrigation — powered entirely by solar energy.
 
 ---
 
-## System Architecture
-
-SoilStream is composed of four layers working in a continuous closed loop:
+## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                        FIELD HARDWARE                       │
-│   ESP32 ← BME280 + Soil Sensor → Solar Panel + Battery     │
-│                Relay → Submersible Pump                     │
-└────────────────────────┬────────────────────────────────────┘
-                         │ MQTT / HTTPS
-┌────────────────────────▼────────────────────────────────────┐
-│                      CLOUD BACKEND                          │
-│        Firebase Realtime DB + Cloud Functions + Flask       │
-└─────────┬─────────────────────┬───────────────┬────────────┘
-          │                     │               │
-┌─────────▼──────┐   ┌──────────▼──────┐  ┌────▼──────────────┐
-│ Rainfall Model │   │  Crop ID Model  │  │  Pest Detection   │
-│  SVR · 92.86%  │   │ ResNet50 · 99.7%│  │  (Kindwise API)   │
-└─────────┬──────┘   └──────────┬──────┘  └────┬──────────────┘
-          └──────────────────────┴───────────────┘
-                                 │
-                    ┌────────────▼───────────────┐
-                    │    DECISION ENGINE          │
-                    │  Pump ON only when:         │
-                    │  • Soil below threshold AND  │
-                    │  • Rain probability < 60%   │
-                    │  • No disease detected      │
-                    └────────────┬───────────────┘
-                                 │
-                    ┌────────────▼───────────────┐
-                    │    REACT NATIVE MOBILE APP  │
-                    │  Live dashboard · Overrides │
-                    │  Crop ID · Disease scan     │
-                    └────────────────────────────┘
+┌─────────────────────────────────────────────────┐
+│                  FIELD HARDWARE                 │
+│   ESP32 ← BME280 + Soil Sensor → Solar Panel   │
+│                Relay → Water Pump               │
+└───────────────────────┬─────────────────────────┘
+                        │ MQTT / HTTPS
+┌───────────────────────▼─────────────────────────┐
+│              FIREBASE CLOUD BACKEND             │
+│       Realtime DB · Cloud Functions · Flask     │
+└──────────┬──────────────────┬───────────────────┘
+           │                  │
+  ┌────────▼───────┐  ┌───────▼────────┐
+  │ Rainfall Model │  │  Crop ID Model │
+  │  SVR · 92.86%  │  │ ResNet50 · 99.7│
+  └────────┬───────┘  └───────┬────────┘
+           └─────────┬─────────┘
+              ┌──────▼──────────────┐
+              │   DECISION ENGINE   │
+              │  Rain? → Pump OFF   │
+              │  Wet?  → Pump OFF   │
+              │  Else  → Pump ON    │
+              └──────┬──────────────┘
+                     │
+          ┌──────────▼──────────────┐
+          │   REACT NATIVE APP      │
+          │  Dashboard · Overrides  │
+          └─────────────────────────┘
 ```
 
 ---
 
-## Hardware Components
+## ML Results
 
-| Component | Role |
-|---|---|
-| ESP32-WROOM-32 | Core microcontroller |
-| BME280 | Temperature, humidity, atmospheric pressure |
-| Capacitive Soil Moisture Sensor | Real-time soil saturation |
-| Relay Module (5V) | Pump control |
-| Submersible Water Pump | Irrigation actuation |
-| 6V Solar Panel + TP4056 | Renewable power input & charging |
-| 18650 Li-ion Battery | Off-sun power storage |
+### Crop Identification
 
----
+| Model | Test Accuracy | F1 Score |
+|---|---|---|
+| **ResNet50** | **99.7%** | **0.97** |
+| VGG16 | 95.6% | 0.95 |
+| EfficientNetB0 | 16.0%* | 0.07 |
 
-## Tech Stack
+*\*Training collapse detected — rejected despite high validation accuracy.*
 
-**Firmware**
-- ESP32 (Arduino / C++)
+### Rainfall Prediction (Konkan Region Dataset)
 
-**ML & Backend**
-- Python · Flask
-- TensorFlow / Keras (ResNet50, VGG16, EfficientNetB0)
-- SVR · LightGBM · GRU
-- Firebase Cloud Functions · Node.js
+| Model | Accuracy | Precision | F1 |
+|---|---|---|---|
+| **SVR** | **92.86%** | **0.9257** | **0.9103** |
+| LightGBM | 92.32% | 0.9087 | 0.9047 |
+| GRU | 92.30% | 0.9195 | 0.9031 |
 
-**Data Sources**
-- Meteostat (historical atmospheric data)
-- Indian Meteorological Department (IMD) rainfall records
-
-**APIs**
-- Kindwise API (pest & disease diagnosis)
-- Gemini API
-
-**Mobile**
-- React Native · Expo · JavaScript
-
-**Database & Cloud**
-- Firebase Realtime Database · Firestore
+> SVR was selected by prioritising **precision over recall** — a false positive (predicting rain that doesn't come) leaves crops dry; the costlier failure in a monsoon-dependent region.
 
 ---
 
-## Project Structure
 
-```
-SoilStream/
-│
-├── hardware/
-│   ├── esp32_code/          # Sensor reading, relay control, MQTT publish
-│   ├── sensor_modules/      # BME280 & soil sensor drivers
-│   └── relay_control/       # Pump actuation logic
-│
-├── backend/
-│   ├── flask_server/        # REST API for ML inference
-│   ├── firebase_functions/  # Cloud triggers & automation
-│   └── ai_models/           # Trained .h5 / .pkl model files + notebooks
-│
-├── mobile_app/
-│   ├── screens/             # Dashboard, crop ID, disease scan
-│   ├── components/          # Reusable UI components
-│   └── services/            # Firebase sync, API clients
-│
-├── datasets/                # Meteostat + IMD processed datasets
-├── documentation/           # Report, paper, poster PDFs
-└── README.md
-```
-
----
-
-## Getting Started
-
-### Prerequisites
-- Node.js ≥ 18
-- Python ≥ 3.9
-- Expo CLI
-- Firebase project with Realtime Database enabled
-- Arduino IDE (for ESP32 flashing)
-
-### Clone
-
-```bash
-git clone https://github.com/RajChoudhary99/SoilStream.git
-cd SoilStream
-```
-
-### Mobile App
-
-```bash
-cd mobile_app
-npm install
-npx expo start
-```
-
-### Backend (Flask)
-
-```bash
-cd backend
-pip install -r requirements.txt
-python app.py
-```
-
-### ESP32 Firmware
-
-Open `hardware/esp32_code/main.ino` in Arduino IDE, configure your WiFi credentials and Firebase URL in `config.h`, then flash to your ESP32.
-
----
-
-## How the Irrigation Decision Works
-
-```
-IF  rain probability ≥ 60%         → Pump OFF  (rain is coming)
-ELSE IF  soil moisture ≥ threshold  → Pump OFF  (soil is wet enough)
-ELSE IF  disease detected           → Pump OFF  (flag for review)
-ELSE                                → Pump ON
-```
-
-The conservative logic avoids waterlogging during unpredictable monsoon seasons without over-relying on any single data source.
-
----
-
-## Future Scope
-
-- Soil nutrient (NPK) and pH monitoring
-- AI-driven fertilizer recommendation
-- Edge AI deployment (TensorFlow Lite on ESP32-S3)
-- Multi-farm dashboard with geospatial mapping
-- Drone integration for aerial crop scouting
-
----
-
-## Authors
-
-**Raj Choudhary · Siddesh Patil · Varun Lad · Devesh Patil**
-
-Department of Computer Science & Engineering (Data Science)
-A.P. Shah Institute of Technology, University of Mumbai
-
----
 
 ## License
 
-This project is developed for academic and research purposes.
-Patent filed with Intellectual Property India (Application No. 202621042187).
-Software registered with the Copyright Office, Government of India (SW-13522/2026-CO).
-
+Developed for academic and research purposes.  
+Patent filed — IP India, Application No. `202621042187`.  
+Software registered — Copyright Office, GoI, `SW-13522/2026-CO`.  
 Unauthorised commercial use is prohibited.
-
----
-
-<div align="center">
-
-*If this project helped you, consider starring the repository.*
-
-</div>
