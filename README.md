@@ -1,14 +1,16 @@
-# SoilStream  
-### Smart Solar-Powered AIoT System for Real-Time Soil Moisture Monitoring and Automated Irrigation
-
 <div align="center">
 
-![IoT](https://img.shields.io/badge/IoT-Smart%20Agriculture-green)
-![AI](https://img.shields.io/badge/AI-Powered-blue)
-![ML](https://img.shields.io/badge/Machine%20Learning-orange)
-![Firebase](https://img.shields.io/badge/Firebase-Backend-yellow)
-![React Native](https://img.shields.io/badge/React%20Native-Mobile%20App-61DAFB)
-![ESP32](https://img.shields.io/badge/ESP32-Microcontroller-red)
+<img src="https://img.shields.io/badge/IEEE_CONIT_2026-Accepted-blue?style=for-the-badge&logo=ieee" />
+<img src="https://img.shields.io/badge/Patent-202621042187-green?style=for-the-badge" />
+<img src="https://img.shields.io/badge/Copyright-SW--13522%2F2026--CO-orange?style=for-the-badge" />
+
+# SoilStream
+
+### A Solar-Powered AIoT System for Intelligent Soil Monitoring and Automated Irrigation
+
+*Accepted at IEEE 6th International Conference on Intelligent Technologies (CONIT 2026)*
+
+[📄 Paper](https://d2tna6wv3bmh8.cloudfront.net/research_paper.pdf) · [📋 Project Report](https://d2tna6wv3bmh8.cloudfront.net/project_report.pdf) · [🖼️ Poster](https://d2tna6wv3bmh8.cloudfront.net/poster.pdf) · [🌐 Blog](https://d2tna6wv3bmh8.cloudfront.net)
 
 </div>
 
@@ -16,250 +18,243 @@
 
 ## Overview
 
-**SoilStream** is a smart solar-powered AIoT (Artificial Intelligence of Things) agricultural system designed to modernize irrigation and crop management using real-time monitoring, machine learning, and intelligent automation.
+Farmers in India's Konkan region lose water, money, and crops to a solvable problem — irrigation systems that can't tell if rain is two hours away. The pump runs, the monsoon arrives, and water is wasted at scale.
 
-The platform integrates:
-
-- IoT-based environmental sensing
-- Smart automated irrigation
-- Rainfall prediction
-- AI-based crop identification
-- Pest & disease diagnosis
-- Cloud-based analytics
-- Solar-powered hardware infrastructure
-
-The system continuously monitors soil moisture, temperature, humidity, and atmospheric pressure to automate irrigation and improve agricultural efficiency while reducing water wastage.
+**SoilStream** is a closed-loop AIoT platform that monitors soil and atmospheric conditions in real time, predicts local rainfall using machine learning, identifies crop type from leaf images, and only irrigates when it genuinely makes sense — all powered by solar energy with no dependency on the grid.
 
 ---
 
-# Features
+## Research & IP
 
-## Real-Time Soil Monitoring
-- Live soil moisture tracking
-- Temperature & humidity monitoring
-- Atmospheric pressure sensing
-- Real-time cloud synchronization
-
-## Smart Automated Irrigation
-- AI-driven irrigation decisions
-- Automatic pump control
-- Water conservation optimization
-- Crop-specific watering logic
-
-## Rainfall Prediction
-- Machine learning-based weather prediction
-- Intelligent irrigation scheduling
-- Prevents unnecessary watering
-
-## AI Crop Identification
-- Upload crop images
-- AI-powered crop recognition
-- Crop-specific recommendations
-
-## Pest & Disease Detection
-- Plant disease diagnosis using AI
-- Pest identification from leaf images
-- Automated remedy suggestions
-
-## Mobile Application
-- Real-time monitoring dashboard
-- Manual pump override
-- Crop analysis interface
-- Smart irrigation controls
+| | |
+|---|---|
+| **Conference** | IEEE CONIT 2026 · KLE Institute of Technology, Hubballi · Paper ID: 960 |
+| **Patent** | Intellectual Property India, GoI · Application No: `202621042187` |
+| **Copyright** | Copyright Office, GoI · Registration No: `SW-13522/2026-CO` |
 
 ---
 
-# System Architecture
+## Key Results
 
-## Hardware Components
-- ESP32-WROOM-32
-- Capacitive Soil Moisture Sensor
-- BME280 Sensor
-- Relay Module
-- Water Pump
-- Solar Panel
-- Li-ion Battery
-- TP4056 Charging Module
+### Crop Identification (CNN Comparison)
 
-## Software Stack
+| Model | Test Accuracy | Val. Accuracy | Weighted F1 | Status |
+|---|---|---|---|---|
+| **ResNet50** | **99.7%** | 96.48% | **0.97** | ✅ Selected |
+| VGG16 | 95.6% | 94.04% | 0.95 | Fallback |
+| EfficientNetB0 | 16.0%* | 99.76% | 0.07 | ❌ Rejected |
 
-### Frontend
-- React Native
-- Expo
-- JavaScript
+*\*Training collapse detected despite high validation accuracy — ruled out at inference.*
 
-### Backend
-- Flask
-- Node.js
-- Firebase Cloud Functions
+### Rainfall Prediction (Coastal Dataset — Konkan Region)
 
-### Database
-- Firebase Firestore
+| Model | Accuracy | Precision | Recall | F1 |
+|---|---|---|---|---|
+| **SVR** | **92.86%** | **0.9257** | 0.8954 | **0.9103** |
+| LightGBM | 92.32% | 0.9087 | 0.9007 | 0.9047 |
+| GRU | 92.30% | 0.9195 | 0.8873 | 0.9031 |
 
-### Machine Learning
-- TensorFlow
-- CNN Models
-- LightGBM
-- Python
+> **Why SVR?** Precision was prioritised over raw accuracy. A false positive (predicting rain when there's none) keeps the pump off when it shouldn't be — the costlier error in a monsoon-dependent region.
+
+### Rainfall Prediction (Extended Region Dataset)
+
+| Model | Accuracy | Precision | Recall | F1 |
+|---|---|---|---|---|
+| SVR | 91.47% | **0.9310** | 0.8725 | 0.9008 |
+| LightGBM | **91.55%** | 0.9232 | 0.8832 | 0.9027 |
+| GRU | 91.38% | 0.9166 | 0.8863 | 0.9012 |
 
 ---
 
-# Working Flow
+## System Architecture
 
-1. IoT sensors collect real-time environmental data.
-2. Data is transmitted to Firebase Cloud.
-3. Machine learning models analyze weather and soil conditions.
-4. Smart irrigation decisions are generated automatically.
-5. Water pump is controlled using relay-based automation.
-6. Farmers receive real-time insights via the mobile app.
+SoilStream is composed of four layers working in a continuous closed loop:
 
----
-
-# AI Modules
-
-## Rainfall Prediction Engine
-The ML model predicts rainfall probability using:
-- Temperature
-- Humidity
-- Pressure
-- Seasonal patterns
-
-## Crop Identification
-CNN-based image classification model for:
-- Crop recognition
-- Crop-specific recommendations
-
-## Pest & Disease Diagnosis
-AI-powered image analysis system for:
-- Disease detection
-- Pest identification
-- Treatment recommendations
-
----
-
-# Smart Irrigation Logic
-
-```text
-IF Rain Expected
-    → Pump OFF
-
-ELSE IF Soil Dry
-    → Pump ON
-
-ELSE IF Soil Wet
-    → Pump OFF
-
-ELSE
-    → Maintain Current State
+```
+┌─────────────────────────────────────────────────────────────┐
+│                        FIELD HARDWARE                       │
+│   ESP32 ← BME280 + Soil Sensor → Solar Panel + Battery     │
+│                Relay → Submersible Pump                     │
+└────────────────────────┬────────────────────────────────────┘
+                         │ MQTT / HTTPS
+┌────────────────────────▼────────────────────────────────────┐
+│                      CLOUD BACKEND                          │
+│        Firebase Realtime DB + Cloud Functions + Flask       │
+└─────────┬─────────────────────┬───────────────┬────────────┘
+          │                     │               │
+┌─────────▼──────┐   ┌──────────▼──────┐  ┌────▼──────────────┐
+│ Rainfall Model │   │  Crop ID Model  │  │  Pest Detection   │
+│  SVR · 92.86%  │   │ ResNet50 · 99.7%│  │  (Kindwise API)   │
+└─────────┬──────┘   └──────────┬──────┘  └────┬──────────────┘
+          └──────────────────────┴───────────────┘
+                                 │
+                    ┌────────────▼───────────────┐
+                    │    DECISION ENGINE          │
+                    │  Pump ON only when:         │
+                    │  • Soil below threshold AND  │
+                    │  • Rain probability < 60%   │
+                    │  • No disease detected      │
+                    └────────────┬───────────────┘
+                                 │
+                    ┌────────────▼───────────────┐
+                    │    REACT NATIVE MOBILE APP  │
+                    │  Live dashboard · Overrides │
+                    │  Crop ID · Disease scan     │
+                    └────────────────────────────┘
 ```
 
 ---
 
-# Project Structure
+## Hardware Components
 
-```bash
+| Component | Role |
+|---|---|
+| ESP32-WROOM-32 | Core microcontroller |
+| BME280 | Temperature, humidity, atmospheric pressure |
+| Capacitive Soil Moisture Sensor | Real-time soil saturation |
+| Relay Module (5V) | Pump control |
+| Submersible Water Pump | Irrigation actuation |
+| 6V Solar Panel + TP4056 | Renewable power input & charging |
+| 18650 Li-ion Battery | Off-sun power storage |
+
+---
+
+## Tech Stack
+
+**Firmware**
+- ESP32 (Arduino / C++)
+
+**ML & Backend**
+- Python · Flask
+- TensorFlow / Keras (ResNet50, VGG16, EfficientNetB0)
+- SVR · LightGBM · GRU
+- Firebase Cloud Functions · Node.js
+
+**Data Sources**
+- Meteostat (historical atmospheric data)
+- Indian Meteorological Department (IMD) rainfall records
+
+**APIs**
+- Kindwise API (pest & disease diagnosis)
+- Gemini API
+
+**Mobile**
+- React Native · Expo · JavaScript
+
+**Database & Cloud**
+- Firebase Realtime Database · Firestore
+
+---
+
+## Project Structure
+
+```
 SoilStream/
 │
 ├── hardware/
-│   ├── esp32_code/
-│   ├── sensor_modules/
-│   └── relay_control/
+│   ├── esp32_code/          # Sensor reading, relay control, MQTT publish
+│   ├── sensor_modules/      # BME280 & soil sensor drivers
+│   └── relay_control/       # Pump actuation logic
 │
 ├── backend/
-│   ├── flask_server/
-│   ├── firebase_functions/
-│   └── ai_models/
+│   ├── flask_server/        # REST API for ML inference
+│   ├── firebase_functions/  # Cloud triggers & automation
+│   └── ai_models/           # Trained .h5 / .pkl model files + notebooks
 │
 ├── mobile_app/
-│   ├── screens/
-│   ├── components/
-│   └── services/
+│   ├── screens/             # Dashboard, crop ID, disease scan
+│   ├── components/          # Reusable UI components
+│   └── services/            # Firebase sync, API clients
 │
-├── datasets/
-├── documentation/
+├── datasets/                # Meteostat + IMD processed datasets
+├── documentation/           # Report, paper, poster PDFs
 └── README.md
 ```
 
 ---
 
-# Installation
+## Getting Started
 
-## Clone Repository
+### Prerequisites
+- Node.js ≥ 18
+- Python ≥ 3.9
+- Expo CLI
+- Firebase project with Realtime Database enabled
+- Arduino IDE (for ESP32 flashing)
+
+### Clone
 
 ```bash
-git clone https://github.com/your-username/SoilStream.git
+git clone https://github.com/RajChoudhary99/SoilStream.git
+cd SoilStream
 ```
 
-## Install Frontend Dependencies
+### Mobile App
 
 ```bash
 cd mobile_app
 npm install
-```
-
-## Start Mobile Application
-
-```bash
 npx expo start
 ```
 
-## Install Backend Dependencies
+### Backend (Flask)
 
 ```bash
 cd backend
 pip install -r requirements.txt
-```
-
-## Run Flask Backend
-
-```bash
 python app.py
 ```
 
----
+### ESP32 Firmware
 
-# Key Benefits
-
-- Precision agriculture
-- Reduced water wastage
-- Sustainable farming
-- AI-driven crop management
-- Real-time monitoring
-- Automated irrigation
-- Renewable energy integration
+Open `hardware/esp32_code/main.ino` in Arduino IDE, configure your WiFi credentials and Firebase URL in `config.h`, then flash to your ESP32.
 
 ---
 
-# Future Scope
+## How the Irrigation Decision Works
 
-- Soil nutrient analysis
-- pH monitoring
-- Fertilizer recommendation engine
-- Edge AI deployment
-- Multi-farm scalability
-- Drone integration
+```
+IF  rain probability ≥ 60%         → Pump OFF  (rain is coming)
+ELSE IF  soil moisture ≥ threshold  → Pump OFF  (soil is wet enough)
+ELSE IF  disease detected           → Pump OFF  (flag for review)
+ELSE                                → Pump ON
+```
 
----
-
-# Authors
-
-- Raj Choudhary
-- Siddesh Patil
-- Varun Lad
-- Devesh Patil
-
-Department of Computer Science & Engineering (Data Science)  
-A.P. Shah Institute of Technology  
-University of Mumbai
+The conservative logic avoids waterlogging during unpredictable monsoon seasons without over-relying on any single data source.
 
 ---
 
-# License
+## Future Scope
+
+- Soil nutrient (NPK) and pH monitoring
+- AI-driven fertilizer recommendation
+- Edge AI deployment (TensorFlow Lite on ESP32-S3)
+- Multi-farm dashboard with geospatial mapping
+- Drone integration for aerial crop scouting
+
+---
+
+## Authors
+
+**Raj Choudhary · Siddesh Patil · Varun Lad · Devesh Patil**
+
+Department of Computer Science & Engineering (Data Science)
+A.P. Shah Institute of Technology, University of Mumbai
+
+---
+
+## License
 
 This project is developed for academic and research purposes.
+Patent filed with Intellectual Property India (Application No. 202621042187).
+Software registered with the Copyright Office, Government of India (SW-13522/2026-CO).
+
+Unauthorised commercial use is prohibited.
 
 ---
 
-# Acknowledgement
+<div align="center">
 
-We sincerely thank our project guides, faculty members, and the Department of Computer Science & Engineering (Data Science), A.P. Shah Institute of Technology, for their valuable guidance and support throughout the development of this project.
+*If this project helped you, consider starring the repository.*
+
+</div>
